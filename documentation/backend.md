@@ -107,7 +107,16 @@ In case of error, an error list is generated following the [RFC 7807](https://to
     ```
     POST /events
     ```
-- **Body parameters**
+- **Input parameters**
+  
+  |**Parameter**|**Type**|**Mandatory**|**Maximum size**|**Description**|
+  |-----------|------|---|--|---------------------------------------------|
+  |name|string|✅|32|The name of the event|
+  |description|string|✅||The description of the event|
+  |startDate|string|✅|29|The start date of the event in ISO 8601 format|
+  |endDate|string|✅|29|The end date of the event in ISO 8601 format|
+  
+- **Request body**
     ```json
     {
         "name": "event name",
