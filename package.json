@@ -1,0 +1,13 @@
+{
+  "name": "kumojincodechallenge",
+  "version": "1.0.0",
+  "description": "This is the Kumojin Challenge project, which consists of a complete application with a backend and a frontend. The backend provides an API to manage events, while the frontend is a SPA that consumes this API and allows users to interact with the events.",
+  "main": "index.js",
+  "scripts": {
+    
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+  
+}
