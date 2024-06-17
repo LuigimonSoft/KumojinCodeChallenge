@@ -1,3 +1,5 @@
+import path from 'path';
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
@@ -40,6 +42,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(bodyParser.json());
 
 app.use(apiPrefix, eventRoutes);
+
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '../frontend/dist/index.html'));
+});
 
 app.use(errorHandler);
 
