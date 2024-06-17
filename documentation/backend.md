@@ -309,6 +309,27 @@ Service-->>-Controller: Return all the events
 Controller-->>-Client: Return JSON Response
 ```
 ### 13. Errores
+Errors are defined in an errorCodes file, using a dictionary that specifies their error code, HTTP status, and error message.
+
+|**Http status**|**Error code**|**Message**|
+|---|----|-------------------------------------------------------------|
+|400|1001|The field Name is required|
+|400|1002|The field Name cannot be empty|
+|400|1003|The field Name must be less than 32 characters|
+|400|1004|The field Description is required|
+|400|1005|The field Description cannot be empty|
+|400|1006|The field StartDate is required|
+|400|1001|The field StartDate cannot be empty|
+|400|1008|The field StartDate has an invalid datetime ISO 8601 format|
+|400|1009|The field EndDate is required|
+|400|1010|The field EndDate cannot be empty|
+|400|1011|The field EndDate has an invalid datetime ISO 8601 format|
+|400|1012|The field StartDate must be less than EndDate|
+|400|1013|Invalid JSON format|
+|400|1014|Unexpected JSON format|
+|404|2001|Event not found|
+|500|4001|Database error|
+|500|5001|Internal server error|
 
 
 
