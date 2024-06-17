@@ -1,5 +1,3 @@
-import path from 'path';
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
@@ -9,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 
 
 import { errorHandler } from './middleware/errorHandler';
+import eventRoutes from './routes/eventRoutes';
 
 dotenv.config({path: __dirname + '/.env'});
 const app = express();
@@ -40,6 +39,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(bodyParser.json());
 
+app.use(apiPrefix, eventRoutes);
 
 app.use(errorHandler);
 
