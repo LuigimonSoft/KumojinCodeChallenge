@@ -15,7 +15,7 @@ describe('EventRow', () => {
     const day = localDate.getDate();
     const hours = localDate.getHours();
     const minutes = localDate.getMinutes();
-    const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+    const ampm = hours >= 12 ? 'P.M.' : 'A.M.';
     const formattedHours = hours % 12 || 12;
     const formattedMinutes = String(minutes).padStart(2, '0');
 
