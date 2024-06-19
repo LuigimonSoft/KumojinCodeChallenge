@@ -58,8 +58,8 @@ describe('Event services', () => {
     const eventsResult = await getEventByName(nameExpected);
 
     expect(eventsResult).toHaveLength(1);
-    expect(eventsResult[0].name).toBe(mockEvents[0].name);
-    expect(eventsResult[0].description).toBe(mockEvents[0].description);
+    expect((eventsResult as EventModel[])[0].name).toBe(mockEvents[0].name);
+    expect((eventsResult as EventModel[])[0].description).toBe(mockEvents[0].description);
   });
 
   it('creates a new event', async () => {

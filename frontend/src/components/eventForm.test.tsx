@@ -1,8 +1,7 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import EventForm from '../components/EventForm';
+import EventForm from '../components/eventForm';
 import { EventModel } from '../models/eventModel';
 import { createEvent } from '../services/eventServices';
 
