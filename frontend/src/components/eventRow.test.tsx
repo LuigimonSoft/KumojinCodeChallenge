@@ -5,6 +5,23 @@ import EventRow from '../components/eventRow';
 import { EventModel } from '../models/eventModel';
 
 describe('EventRow', () => {
+
+  const convertToLocalDateTime = (isoString: string): string => {
+    const localDate = new Date(isoString);
+
+    const year = localDate.getFullYear();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const month = monthNames[localDate.getMonth()];
+    const day = localDate.getDate();
+    const hours = localDate.getHours();
+    const minutes = localDate.getMinutes();
+    const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    return `${month} ${day}, ${year} at ${formattedHours}:${formattedMinutes} ${ampm}`;
+};
+
   const mockEvent: EventModel = {
     id: 1,
     name: 'Event 1',
@@ -25,8 +42,8 @@ describe('EventRow', () => {
     expect(screen.getByTestId('row-Event 1')).toBeInTheDocument();
     expect(screen.getByText('Event 1')).toBeInTheDocument();
     expect(screen.getByText('Description 1')).toBeInTheDocument();
-    expect(screen.getByText('July 19, 2024 at 8:00 p.m.')).toBeInTheDocument();
-    expect(screen.getByText('July 20, 2024 at 4:00 a.m.')).toBeInTheDocument();
+    expect(screen.getByText(convertToLocalDateTime('2024-07-20T09:00:00+09:00'))).toBeInTheDocument();
+    expect(screen.getByText(convertToLocalDateTime('2024-07-20T17:00:00+09:00'))).toBeInTheDocument();
   });
 
   it('should call onViewDetails when the row is double-clicked', () => {
