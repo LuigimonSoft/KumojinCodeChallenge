@@ -10,28 +10,6 @@ vi.mock('../services/eventServices');
 const mockCreateEvent = createEvent as Mock;
 
 describe('EventForm', () => {
-  const mockEvent: EventModel = {
-    id: 1,
-    name: 'Event 1',
-    description: 'Description 1',
-    startDate: '2024-07-20T09:00:00+09:00',
-    endDate: '2024-07-20T17:00:00+09:00',
-  };
-
-  const mockEventUTC: EventModel = {
-    id: 1,
-    name: 'Event 1',
-    description: 'Description 1',
-    startDate: '2024-07-19T20:00',
-    endDate: '2024-07-20T04:00',
-  };
-
-  const mockOnSave = vi.fn();
-  const mockOnClose = vi.fn();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   const convertToLocalDateTime = (isoString: string): string => {
     const localDate = new Date(isoString);
@@ -44,6 +22,31 @@ describe('EventForm', () => {
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
+
+  const mockEvent: EventModel = {
+    id: 1,
+    name: 'Event 1',
+    description: 'Description 1',
+    startDate: '2024-07-20T09:00:00+09:00',
+    endDate: '2024-07-20T17:00:00+09:00',
+  };
+
+  const mockEventUTC: EventModel = {
+    id: 1,
+    name: 'Event 1',
+    description: 'Description 1',
+    startDate: convertToLocalDateTime('2024-07-20T09:00:00+09:00'),
+    endDate: convertToLocalDateTime('2024-07-20T17:00:00+09:00')
+  };
+
+  const mockOnSave = vi.fn();
+  const mockOnClose = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  
   it('should render form fields correctly', () => {
     render(<EventForm event={mockEvent} onSave={mockOnSave} onClose={mockOnClose} isViewMode={false} />);
 
