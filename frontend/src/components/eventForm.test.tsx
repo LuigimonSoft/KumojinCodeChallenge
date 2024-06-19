@@ -1,8 +1,7 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import EventForm from '../components/EventForm';
+import EventForm from '../components/eventForm';
 import { EventModel } from '../models/eventModel';
 import { createEvent } from '../services/eventServices';
 
@@ -11,6 +10,19 @@ vi.mock('../services/eventServices');
 const mockCreateEvent = createEvent as Mock;
 
 describe('EventForm', () => {
+
+  const convertToLocalDateTime = (isoString: string): string => {
+    const localDate = new Date(isoString);
+
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    const hours = String(localDate.getHours()).padStart(2, '0');
+    const minutes = String(localDate.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const mockEvent: EventModel = {
     id: 1,
     name: 'Event 1',
@@ -23,8 +35,8 @@ describe('EventForm', () => {
     id: 1,
     name: 'Event 1',
     description: 'Description 1',
-    startDate: '2024-07-19T20:00',
-    endDate: '2024-07-20T04:00',
+    startDate: convertToLocalDateTime('2024-07-20T09:00:00+09:00'),
+    endDate: convertToLocalDateTime('2024-07-20T17:00:00+09:00')
   };
 
   const mockOnSave = vi.fn();
@@ -34,13 +46,14 @@ describe('EventForm', () => {
     vi.clearAllMocks();
   });
 
+  
   it('should render form fields correctly', () => {
     render(<EventForm event={mockEvent} onSave={mockOnSave} onClose={mockOnClose} isViewMode={false} />);
 
     expect(screen.getByLabelText('Name')).toHaveValue(mockEvent.name);
     expect(screen.getByLabelText('Description')).toHaveValue(mockEvent.description);
-    expect(screen.getByLabelText('Start date')).toHaveValue('2024-07-19T20:00');
-    expect(screen.getByLabelText('End date')).toHaveValue('2024-07-20T04:00');
+    expect(screen.getByLabelText('Start date')).toHaveValue(convertToLocalDateTime('2024-07-20T09:00:00+09:00'));
+    expect(screen.getByLabelText('End date')).toHaveValue(convertToLocalDateTime('2024-07-20T17:00:00+09:00'));
   });
 
   it('should handle input changes', () => {

@@ -13,6 +13,6 @@ export function errorHandler( err: any, req: Request, res: Response, next: NextF
   } else
     errorsResult = err as CustomError[];
 
-    console.error(`[Errors]`, { errorsResult});
+    console.log(`[Errors]`, { errorsResult});
   res.status(errorsResult[0].status || 500).json(errorsResult);
 }
