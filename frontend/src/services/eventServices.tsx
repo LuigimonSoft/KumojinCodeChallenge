@@ -3,7 +3,7 @@ import axios from "axios";
 import { EventModel } from "../models/eventModel";
 import { EventError } from "../models/eventError";
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: "http://localhost:5000/api/v1",
   headers: {
     "Content-Type": "application/json",

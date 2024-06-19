@@ -1,5 +1,4 @@
 import { vi } from 'vitest';
-import { EventModel } from '../../models/eventModel';
 
 export const getEvents = vi.fn().mockResolvedValue([
   {
