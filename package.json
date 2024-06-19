@@ -4,11 +4,12 @@
   "description": "This is the Kumojin Challenge project, which consists of a complete application with a backend and a frontend. The backend provides an API to manage events, while the frontend is a SPA that consumes this API and allows users to interact with the events.",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "test": "SET NODE_ENV=test&mocha",
     "dev": "SET NODE_ENV=development& ts-node-dev --respawn --transpile-only src/index.ts",
-    "start": "SET NODE_ENV=production& ts-node --respawn --transpile-only src/index.ts"
+    "start": "SET NODE_ENV=production& ts-node --respawn --transpile-only src/index.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
