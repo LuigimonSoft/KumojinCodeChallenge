@@ -33,13 +33,24 @@ describe('EventForm', () => {
     vi.clearAllMocks();
   });
 
+  const convertToLocalDateTime = (isoString: string): string => {
+    const localDate = new Date(isoString);
+
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    const hours = String(localDate.getHours()).padStart(2, '0');
+    const minutes = String(localDate.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
   it('should render form fields correctly', () => {
     render(<EventForm event={mockEvent} onSave={mockOnSave} onClose={mockOnClose} isViewMode={false} />);
 
     expect(screen.getByLabelText('Name')).toHaveValue(mockEvent.name);
     expect(screen.getByLabelText('Description')).toHaveValue(mockEvent.description);
-    expect(screen.getByLabelText('Start date')).toHaveValue('2024-07-19T20:00');
-    expect(screen.getByLabelText('End date')).toHaveValue('2024-07-20T04:00');
+    expect(screen.getByLabelText('Start date')).toHaveValue(convertToLocalDateTime('2024-07-20T09:00:00+09:00'));
+    expect(screen.getByLabelText('End date')).toHaveValue(convertToLocalDateTime('2024-07-20T17:00:00+09:00'));
   });
 
   it('should handle input changes', () => {
