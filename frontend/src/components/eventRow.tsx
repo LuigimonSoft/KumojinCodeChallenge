@@ -23,7 +23,7 @@ const EventRow: React.FC<EventRowProps> = ({ event, onViewDetails }) => {
   };
   return (
     <tr onDoubleClick={handleDoubleClick} className="odd:bg-white even:bg-gray-50 border-b">
-      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{event.name}</th>
+      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" data-testid={'row-'+ event.name }>{event.name}</th>
       <td className="px-6 py-4 whitespace-nowrap">{event.description}</td>
       <td className="px-6 py-4 whitespace-nowrap">{formatDate(event.startDate)}</td>
       <td className="px-6 py-4 whitespace-nowrap">{formatDate(event.endDate)}</td>
