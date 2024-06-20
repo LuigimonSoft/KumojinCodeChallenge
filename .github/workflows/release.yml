@@ -42,6 +42,13 @@ jobs:
           run: |
             curl -fsSL https://get.docker.com -o get-docker.sh
             sh get-docker.sh
+        
+        - name: Extract tag name
+          id: extract-tag
+          run: |
+            tag=${GITHUB_REF##*/}
+            echo "Tag: $tag"
+            echo "::set-output name=tag::$tag"
 
         - name: Build Docker image
           run: docker build -t myapp:${{ steps.extract-tag.outputs.tag }} .
