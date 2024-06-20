@@ -13,11 +13,27 @@ describe('EventRow', () => {
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const month = monthNames[localDate.getMonth()];
     const day = localDate.getDate();
-    const hours = localDate.getHours();
-    const minutes = localDate.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12;
-    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    const options: Intl.DateTimeFormatOptions = {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+    };
+    const timeFormatter = new Intl.DateTimeFormat(undefined, options);
+    const timeParts = timeFormatter.formatToParts(localDate);
+
+    let formattedHours = '';
+    let formattedMinutes = '';
+    let ampm = '';
+    for (const part of timeParts) {
+        if (part.type === 'hour') {
+            formattedHours = part.value;
+        } else if (part.type === 'minute') {
+            formattedMinutes = part.value;
+        } else if (part.type === 'dayPeriod') {
+            ampm = part.value;
+        }
+    }
 
     return `${month} ${day}, ${year} at ${formattedHours}:${formattedMinutes} ${ampm}`;
 };
