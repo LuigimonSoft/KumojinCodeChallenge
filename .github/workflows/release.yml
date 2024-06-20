@@ -2,7 +2,7 @@ name: Generate Release notes, Build and Docker Image
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
     build-and-release:
