@@ -11,6 +11,8 @@ jobs:
       steps: 
         - name: Checkout repository
           uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
 
         - name: Set up Node.js
           uses: actions/setup-node@v3
@@ -68,10 +70,15 @@ jobs:
             sudo apt-get install -y gh jq
 
         - name: Fetch previous tag
-          id: prev-tag
-          run: |
-            prev_tag=$(git describe --tags --abbrev=0 HEAD^)
-            echo "::set-output name=prev-tag::$prev_tag"
+        id: prev-tag
+        run: |
+          prev_tag=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          if [ -z "$prev_tag" ]; then
+            echo "No previous tag found"
+          else
+            echo "Previous tag: $prev_tag"
+          fi
+          echo "::set-output name=prev_tag::$prev_tag"
 
         - name: Generate release notes
           id: release-notes
