@@ -1,0 +1,79 @@
+name: Generate Release notes, Build and Docker Image
+
+on:
+  release:
+    types: [created]
+
+jobs:
+    build-and-release:
+      runs-on: ubuntu-latest
+
+      steps: 
+        - name: Checkout repository
+          uses: actions/checkout@v2
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '18'
+        - name: Install dependences for frontend
+          run: npm install
+          working-directory: ./frontend
+
+        - name: Build frontend
+          run: npm run build
+          working-directory: ./frontend
+
+        - name: Install dependencies for backend
+          run: npm install
+          working-directory: ./
+
+        - name: Build backend
+          run: npm run build
+          working-directory: ./
+
+        - name: Create frontend dist directory in backend
+          run: mkdir -p ./dist/frontend/dist
+
+        - name: Copy frontend build to backend
+          run: cp -r ./frontend/dist/* ./dist/frontend/dist/
+
+        - name: Install Docker CLI
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+
+        - name: Build Docker image
+          run: docker build -t myapp:${{ github.ref }} .
+
+        - name: Save Docker image to file
+          run: docker save myapp:${{ github.ref }} -o site_${{ github.ref }}.tar
+
+        - name: Upload Docke image as artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: site-docker-image
+            path: site_${{ github.ref }}.tar
+
+        - name: Install Github CLI
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y gh jq
+
+        - name: Fetch previous tag
+          id: prev-tag
+          run: |
+            prev_tag=$(git describe --tags --abbrev=0 HEAD^)
+            echo "::set-output name=prev-tag::$prev_tag"
+
+        - name: Generate release notes
+          id: release-notes
+          run: |
+            features=""
+            fixes=""
+            
+
+        
+            
+
+          
