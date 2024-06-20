@@ -44,16 +44,16 @@ jobs:
             sh get-docker.sh
 
         - name: Build Docker image
-          run: docker build -t myapp:${{ github.ref }} .
+          run: docker build -t myapp:${{ steps.extract-tag.outputs.tag }} .
 
         - name: Save Docker image to file
-          run: docker save myapp:${{ github.ref }} -o site_${{ github.ref }}.tar
+          run: docker save myapp:${{ steps.extract-tag.outputs.tag }} -o site_${{ steps.extract-tag.outputs.tag }}.tar
 
         - name: Upload Docke image as artifact
           uses: actions/upload-artifact@v3
           with:
             name: site-docker-image
-            path: site_${{ github.ref }}.tar
+            path: site_${{ steps.extract-tag.outputs.tag }}.tar
 
         - name: Install Github CLI
           run: |
@@ -96,7 +96,7 @@ jobs:
           uses: actions/upload-release-asset@v1
           with:
             upload_url: ${{ github.event.release.upload_url }}
-            asset_path: ./site_${{ github.ref }}.tar
-            asset_name: site_${{ github.ref }}.tar
+            asset_path: ./site_${{ steps.extract-tag.outputs.tag }}.tar
+            asset_name: site_${{ steps.extract-tag.outputs.tag }}.tar
             asset_content_type: application/x-tar
 
