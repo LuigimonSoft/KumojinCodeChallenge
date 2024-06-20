@@ -10,7 +10,7 @@ jobs:
 
       steps: 
         - name: Checkout repository
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
           with:
             fetch-depth: 0
 
@@ -18,7 +18,7 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: '18'
-            
+
         - name: Install dependences for frontend
           run: npm install
           working-directory: ./frontend
