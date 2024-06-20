@@ -83,6 +83,8 @@ jobs:
 
         - name: Generate release notes
           id: release-notes
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
             features=""
             fixes=""
