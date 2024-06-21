@@ -88,17 +88,26 @@ jobs:
           run: |
             features=""
             fixes=""
-            prs=$(gh pr list --state merged --search "merged:>=$(git log -1 --pretty=format:%as ${{ steps.prev-tag.outputs.prev_tag }})" --json title,headRefName --jq '.[] | {title: .title, branch: .headRefName}')
-            for pr in $(echo "${prs}" | jq -c '.'); do
-              title=$(echo $pr | jq -r '.title')
-              branch=$(echo $pr | jq -r '.branch')
-              if [[ $branch == feature/* ]]; then
-                features="${features}\n* ${title}"
-              elif [[ $branch == fix/* ]]; then
-                fixes="${fixes}\n* ${title}"
-              fi
-            done
-            echo -e "## 🚀 Features\n${features}\n## 🐞Fixes\n${fixes}" > release-notes.txt
+            if [ -n "${{ steps.prev-tag.outputs.prev_tag }}" ]; then
+              prs=$(gh pr list --state merged --search "merged:>=$(git log -1 --pretty=format:%as ${{ steps.prev-tag.outputs.prev_tag }})" --json title,headRefName --jq '.[] | {title: .title, branch: .headRefName}')
+            else
+              prs=$(gh pr list --state merged --json title,headRefName --jq '.[] | {title: .title, branch: .headRefName}')
+            fi
+            if [ -z "$prs" ]; then
+              echo "No PRs found"
+              echo -e "## Features\n\n## Fixes\n" > release-notes.txt
+            else
+              for pr in $(echo "${prs}" | jq -c '.'); do
+                title=$(echo $pr | jq -r '.title')
+                branch=$(echo $pr | jq -r '.branch')
+                if [[ $branch == feature/* ]]; then
+                  features="${features}\n* ${title}"
+                elif [[ $branch == fix/* ]]; then
+                  fixes="${fixes}\n* ${title}"
+                fi
+              done
+              echo -e "## Features\n${features}\n## Fixes\n${fixes}" > release-notes.txt
+            fi
             cat release-notes.txt
 
         - name: Update GitHub release
