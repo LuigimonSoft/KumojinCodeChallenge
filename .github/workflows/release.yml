@@ -76,6 +76,7 @@ jobs:
         - name: Fetch previous tag
           id: prev-tag
           run: |
+            git fetch --tags
             prev_tag=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
             if [ -z "$prev_tag" ]; then
               echo "No previous tag found"
