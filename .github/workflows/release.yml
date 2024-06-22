@@ -73,6 +73,10 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y gh jq
 
+        - name: Configure GitHub CLI authentication
+          run: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
         - name: Fetch previous tag
           id: prev-tag
           run: |
@@ -121,6 +125,9 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
+            gh release view $GITHUB_REF --json assets --jq '.assets[].id' | while read asset_id; do
+              gh release delete-asset $GITHUB_REF --id $asset_id
+            done
             echo -e "\n$(cat release-notes.txt)" >> body.txt
             gh release edit ${{ steps.extract-tag.outputs.tag }} --notes "$(cat body.txt)"
 
