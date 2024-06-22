@@ -97,6 +97,7 @@ jobs:
             else
               prs=$(gh pr list --state merged --json title,headRefName)
             fi
+            echo "PRs: $prs"
             if [ -z "$prs" ]; then
               echo "No PRs found"
               echo -e "## Features\n\n## Fixes\n" > release-notes.txt
@@ -106,6 +107,8 @@ jobs:
                 branch=$(echo "$pr" | jq -r '.headRefName')
                 if [[ $branch == feature/* ]]; then
                   features="${features}\n* ${title}"
+                elif [[ $branch == Feature/* ]]; then
+                  features="${Features}\n* ${title}"
                 elif [[ $branch == fix/* ]]; then
                   fixes="${fixes}\n* ${title}"
                 fi
@@ -118,9 +121,8 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            gh release view $GITHUB_REF --json body --jq '.body' > body.txt
             echo -e "\n$(cat release-notes.txt)" >> body.txt
-            gh release edit $GITHUB_REF --notes "$(cat body.txt)"
+            gh release edit ${{ steps.extract-tag.outputs.tag }} --notes "$(cat body.txt)"
 
         - name: Upload Docker image to GitHub Release
           uses: actions/upload-release-asset@v1
