@@ -106,36 +106,43 @@ jobs:
               prs=$(gh pr list --state merged --json title,headRefName)
             fi
             echo "PRs: $prs"
+            echo "## What's Changed" > release-notes.txt
+            echo "" >> release-notes.txt
             if [ -z "$prs" ]; then
               echo "No PRs found"
               echo -e "## Features\n\n## Fixes\n" > release-notes.txt
             else
-              echo "$prs" | jq -c '.[]' | while read pr; do
-                title=$(echo "$pr" | jq -r '.title')
-                branch=$(echo "$pr" | jq -r '.headRefName')
-                echo "Title: $title, Branch: $branch"
-                if [[ $branch == feature/* ]]; then
-                  features="${features}\n* ${title}"
-                elif [[ $branch == Feature/* ]]; then
-                  features="${Features}\n* ${title}"
-                elif [[ $branch == fix/* ]]; then
-                  fixes="${fixes}\n* ${title}"
-                fi
-              done
+              features=$(gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"')
+              fixes=$(gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' )
+
               echo "## Features\n${features}\n## Fixes\n${fixes}"
               echo -e "## Features\n${features}\n## Fixes\n${fixes}" > release-notes.txt
             fi
             cat release-notes.txt
 
+        - name: Delete existing release assets
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            release_id=$(gh release view ${GITHUB_REF#refs/tags/} --json id -q .id)
+            assets=$(gh release view ${GITHUB_REF#refs/tags/} --json assets -q '.assets[].name')
+            for asset in $assets
+            do
+              gh release delete-asset ${GITHUB_REF#refs/tags/} "$asset" --yes
+            done
+
         - name: Update release notes
           uses: softprops/action-gh-release@v1
           with:
             body_path: release-notes.txt
+            files: site_${{ steps.extract-tag.outputs.tag }}.tar
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Upload Docker image to GitHub Release
           uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ github.event.release.upload_url }}
             asset_path: ./site_${{ steps.extract-tag.outputs.tag }}.tar
