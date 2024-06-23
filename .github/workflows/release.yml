@@ -126,7 +126,7 @@ jobs:
         - name: Update release notes
           uses: softprops/action-gh-release@v1
           with:
-            body_path: release_notes.txt
+            body_path: release-notes.txt
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
