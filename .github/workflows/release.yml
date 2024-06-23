@@ -81,37 +81,48 @@ jobs:
           run: |
             echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-        - name: Fetch previous tag
-          id: prev-tag
+        - name: Get latest release tag
+          id: get_latest_release
           run: |
-            git fetch --tags
-            prev_tag=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
-            if [ -z "$prev_tag" ]; then
-              echo "No previous tag found"
+            latest_tag=$(git describe --tags --abbrev=0 --exclude ${GITHUB_REF#refs/tags/} 2>/dev/null || echo "")
+            if [ -z "$latest_tag" ]; then
+              echo "latest_tag=" >> $GITHUB_OUTPUT
+              echo "is_first_release=true" >> $GITHUB_OUTPUT
             else
-              echo "Previous tag: $prev_tag"
+              echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+              echo "is_first_release=false" >> $GITHUB_OUTPUT
             fi
-            echo "::set-output name=prev_tag::$prev_tag"
 
         - name: Generate release notes
           id: release-notes
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            latest_tag=${{ steps.prev-tag.outputs.prev_tag }}
+            latest_tag=${{ steps.get_latest_release.outputs.latest_tag }}
+            is_first_release=${{ steps.get_latest_release.outputs.is_first_release }}
             current_tag=${GITHUB_REF#refs/tags/}
             
             echo "## What's Changed" > release-notes.txt
             echo "" >> release-notes.txt
             
-            echo "### Features" >> release-notes.txt
-            gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
-            echo "" >> release-notes.txt
-            
-            echo "### Fixes" >> release-notes.txt
-            gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+            if [ "$is_first_release" = "true" ]; then
+              echo "### Features" >> release-notes.txt
+              gh pr list --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+              echo "" >> release-notes.txt
+              
+              echo "### Fixes" >> release-notes.txt
+              gh pr list --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+            else
+              echo "### Features" >> release-notes.txt
+              gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+              echo "" >> release-notes.txt
+              
+              echo "### Fixes" >> release-notes.txt
+              gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+            fi
             
             cat release-notes.txt
+
 
         - name: Delete existing release assets
           env:
