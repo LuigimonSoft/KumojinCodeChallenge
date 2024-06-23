@@ -109,6 +109,7 @@ jobs:
               echo "$prs" | jq -c '.[]' | while read pr; do
                 title=$(echo "$pr" | jq -r '.title')
                 branch=$(echo "$pr" | jq -r '.headRefName')
+                echo "Title: $title, Branch: $branch"
                 if [[ $branch == feature/* ]]; then
                   features="${features}\n* ${title}"
                 elif [[ $branch == Feature/* ]]; then
@@ -117,6 +118,7 @@ jobs:
                   fixes="${fixes}\n* ${title}"
                 fi
               done
+              echo "## Features\n${features}\n## Fixes\n${fixes}"
               echo -e "## Features\n${features}\n## Fixes\n${fixes}" > release-notes.txt
             fi
             cat release-notes.txt
@@ -125,8 +127,8 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            gh release view $GITHUB_REF --json assets --jq '.assets[].id' | while read asset_id; do
-              gh release delete-asset $GITHUB_REF --id $asset_id
+            gh release view ${{ steps.extract-tag.outputs.tag }} --json assets --jq '.assets[].id' | while read asset_id; do
+              gh release delete-asset ${{ steps.extract-tag.outputs.tag }} --id $asset_id
             done
             echo -e "\n$(cat release-notes.txt)" >> body.txt
             gh release edit ${{ steps.extract-tag.outputs.tag }} --notes "$(cat body.txt)"
