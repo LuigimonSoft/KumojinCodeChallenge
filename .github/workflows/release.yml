@@ -98,26 +98,19 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            features=""
-            fixes=""
-            if [ -n "${{ steps.prev-tag.outputs.prev_tag }}" ]; then
-              prs=$(gh pr list --state merged --search "merged:>=$(git log -1 --pretty=format:%as ${{ steps.prev-tag.outputs.prev_tag }})" --json title,headRefName)
-            else
-              prs=$(gh pr list --state merged --json title,headRefName)
-            fi
-            echo "PRs: $prs"
+            latest_tag=${{ steps.prev-tag.outputs.prev_tag }}
+            current_tag=${GITHUB_REF#refs/tags/}
+            
             echo "## What's Changed" > release-notes.txt
             echo "" >> release-notes.txt
-            if [ -z "$prs" ]; then
-              echo "No PRs found"
-              echo -e "## Features\n\n## Fixes\n" > release-notes.txt
-            else
-              features=$(gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"')
-              fixes=$(gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' )
-
-              echo "## Features\n${features}\n## Fixes\n${fixes}"
-              echo -e "## Features\n${features}\n## Fixes\n${fixes}" > release-notes.txt
-            fi
+            
+            echo "### Features" >> release-notes.txt
+            gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+            echo "" >> release-notes.txt
+            
+            echo "### Fixes" >> release-notes.txt
+            gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+            
             cat release-notes.txt
 
         - name: Delete existing release assets
@@ -139,13 +132,4 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Upload Docker image to GitHub Release
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ github.event.release.upload_url }}
-            asset_path: ./site_${{ steps.extract-tag.outputs.tag }}.tar
-            asset_name: site_${{ steps.extract-tag.outputs.tag }}.tar
-            asset_content_type: application/x-tar
 
