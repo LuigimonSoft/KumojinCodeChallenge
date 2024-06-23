@@ -123,15 +123,12 @@ jobs:
             fi
             cat release-notes.txt
 
-        - name: Update GitHub release
+        - name: Update release notes
+          uses: softprops/action-gh-release@v1
+          with:
+            body_path: release_notes.txt
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            gh release view ${{ steps.extract-tag.outputs.tag }} --json assets --jq '.assets[].id' | while read asset_id; do
-              gh release delete-asset ${{ steps.extract-tag.outputs.tag }} --id $asset_id
-            done
-            echo -e "\n$(cat release-notes.txt)" >> body.txt
-            gh release edit ${{ steps.extract-tag.outputs.tag }} --notes "$(cat body.txt)"
 
         - name: Upload Docker image to GitHub Release
           uses: actions/upload-release-asset@v1
