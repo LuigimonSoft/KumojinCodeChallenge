@@ -64,13 +64,13 @@ jobs:
           run: docker build -t myapp:${{ steps.extract-tag.outputs.tag }} .
 
         - name: Save Docker image to file
-          run: docker save myapp:${{ steps.extract-tag.outputs.tag }} -o site_${{ steps.extract-tag.outputs.tag }}.tar
+          run: docker save myapp:${{ steps.extract-tag.outputs.tag }} -o site_docker_${{ steps.extract-tag.outputs.tag }}.tar
 
         - name: Upload Docke image as artifact
           uses: actions/upload-artifact@v3
           with:
             name: site-docker-image
-            path: site_${{ steps.extract-tag.outputs.tag }}.tar
+            path: site_docker_${{ steps.extract-tag.outputs.tag }}.tar
 
         - name: Install Github CLI
           run: |
@@ -107,18 +107,18 @@ jobs:
             
             if [ "$is_first_release" = "true" ]; then
               echo "### Features" >> release-notes.txt
-              gh pr list --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+              gh pr list --limit 1000 --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
               echo "" >> release-notes.txt
               
               echo "### Fixes" >> release-notes.txt
-              gh pr list --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+              gh pr list --limit 1000 --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
             else
               echo "### Features" >> release-notes.txt
-              gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+              gh pr list --limit 1000 --base $latest_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("feature/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
               echo "" >> release-notes.txt
               
               echo "### Fixes" >> release-notes.txt
-              gh pr list --base $latest_tag --head $current_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
+              gh pr list --limit 1000 --base $latest_tag --state merged --json number,title,headRefName --jq '.[] | select(.headRefName | ascii_downcase | startswith("fix/")) | "- \(.title) (#\(.number))"' >> release-notes.txt
             fi
             
             cat release-notes.txt
@@ -132,6 +132,7 @@ jobs:
             assets=$(gh release view ${GITHUB_REF#refs/tags/} --json assets -q '.assets[].name')
             for asset in $assets
             do
+              echo "Deleting asset: $asset"
               gh release delete-asset ${GITHUB_REF#refs/tags/} "$asset" --yes
             done
 
@@ -139,7 +140,7 @@ jobs:
           uses: softprops/action-gh-release@v1
           with:
             body_path: release-notes.txt
-            files: site_${{ steps.extract-tag.outputs.tag }}.tar
+            files: site_docker_${{ steps.extract-tag.outputs.tag }}.tar
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
