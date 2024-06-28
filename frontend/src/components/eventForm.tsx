@@ -86,7 +86,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, onSave, onClose, isViewMod
                 />
               </div>
               <div className="col-span-6 sm:col-span-3">
-                <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900">
                   Description
                 </label>
                 <input type="text" name="description" id="description"

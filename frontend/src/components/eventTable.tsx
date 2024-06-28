@@ -86,7 +86,7 @@ const EventTable: React.FC = () => {
   }
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="relative overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-4">
           <form onSubmit={handleSearch} className="flex space-x-2">
@@ -106,7 +106,7 @@ const EventTable: React.FC = () => {
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-testid="btnSearch"
             >Search</button>
             <button onClick={handleCreateNewEvent} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                New Event
+                New event
             </button>
           </form>
           
