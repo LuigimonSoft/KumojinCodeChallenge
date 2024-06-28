@@ -4,7 +4,7 @@ import { EventModel } from "../models/eventModel";
 import { EventError } from "../models/eventError";
 
 export const apiClient = axios.create({
-  baseURL: window.location.href + "/api/v1",
+  baseURL: window.location.href + "api/v1",
   headers: {
     "Content-Type": "application/json",
   },
