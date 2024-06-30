@@ -16,7 +16,8 @@ export enum ErrorCode {
   EVENT_NOT_FOUND = 2001,
   EVENT_ALREADY_EXISTS = 2002,
   DATABASE_ERROR = 4001,
-  INTERNAL_SERVER_ERROR = 5001
+  INTERNAL_SERVER_ERROR = 5001,
+  DEPENDENCY_INJECTION_ERROR = 5002
 }
 
 export const errorDetails = {
@@ -91,6 +92,10 @@ export const errorDetails = {
   [ErrorCode.DATABASE_ERROR]: {
     httpStatus: 500,
     message: 'Database error'
+  },
+  [ErrorCode.DEPENDENCY_INJECTION_ERROR]: {
+    httpStatus: 500,
+    message: 'Dependency injection not found'
   }
 
 }

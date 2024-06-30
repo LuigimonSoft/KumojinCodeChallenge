@@ -1,6 +1,6 @@
 import {  Request, Response, NextFunction } from 'express';
 
-import { EventService } from '../services/eventService';
+import { IEventService } from '../services/interfaces/IEventService';
 import { Event } from '../models/event';
 import { CustomError, typeErrors } from '../utils/customError';
 import { ErrorCode } from '../utils/errorCodes';
@@ -8,7 +8,7 @@ import { createEventValidator, getEventByNameValidator } from '../validators/eve
 
 
 export class EventController {
-  constructor(private eventService: EventService) {}
+  constructor(private eventService: IEventService) {}
 
   public createEvent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
