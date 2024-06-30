@@ -6,6 +6,7 @@ export enum typeErrors {
   CONTROLLER_ERROR = 'ControllerError',
   VALIDATION_ERROR = 'ValidationError',
   CUSTOM_ERROR = 'CustomError',
+  INFRASTRUCTURE_ERROR = 'InfrastructureError',
   UNKNOWN_ERROR = 'UnknownError',
 }
 

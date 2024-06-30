@@ -1,8 +1,9 @@
 import { Event } from '../models/event'; 
 import { CustomError, typeErrors } from '../utils/customError';
 import { ErrorCode } from '../utils/errorCodes';
+import { IEventRepository } from './interfaces/IEventRepository';
 
-export class EventRepository
+export class EventRepository implements IEventRepository
 {
   private events: Event[] = [];
 

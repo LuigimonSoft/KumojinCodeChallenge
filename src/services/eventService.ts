@@ -3,10 +3,11 @@ import { parseISO } from 'date-fns';
 import { Event } from '../models/event'; 
 import { CustomError, typeErrors } from '../utils/customError';
 import { ErrorCode } from '../utils/errorCodes';
-import { EventRepository } from '../repositories/eventRepository';
+import { IEventRepository } from '../repositories/interfaces/IEventRepository';
+import { IEventService } from './interfaces/IEventService';
 
-export class EventService {
-  constructor(private eventRepository: EventRepository) {}
+export class EventService implements IEventService {
+  constructor(private eventRepository: IEventRepository) {}
 
   public async createEvent(event: Event): Promise<Event> {
     try {
